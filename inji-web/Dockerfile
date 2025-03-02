@@ -73,8 +73,8 @@ RUN echo "DEFAULT_THEME=${DEFAULT_THEME}" >> ${work_dir}/env.env \
     && echo "DEFAULT_TITLE=${DEFAULT_TITLE}" >> ${work_dir}/env.env
 
 # Copy and set permissions for the startup script
-COPY configure_start.sh /home/${container_user}/configure_start.sh
-RUN chmod +x /home/${container_user}/configure_start.sh && chown ${container_user}:${container_user} /home/${container_user}/configure_start.sh
+# COPY configure_start.sh /home/${container_user}/configure_start.sh
+# RUN chmod +x /home/${container_user}/configure_start.sh && chown ${container_user}:${container_user} /home/${container_user}/configure_start.sh
 
 # Set ownership of the HTML directory
 RUN chown -R ${container_user}:${container_user} ${work_dir}
@@ -86,7 +86,7 @@ WORKDIR /home/${container_user}
 # Expose port 3004
 EXPOSE 3004
 
-ENTRYPOINT ["./configure_start.sh"]
+# ENTRYPOINT ["./configure_start.sh"]
 
 # Run Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]

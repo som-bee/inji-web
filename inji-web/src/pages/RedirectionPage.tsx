@@ -31,38 +31,73 @@ export const RedirectionPage: React.FC = () => {
 
     useEffect(() => {
         const fetchToken = async () => {
+            console.log("Active Session Info:", activeSessionInfo);
             if (Object.keys(activeSessionInfo).length > 0) {
                 const code = searchParams.get("code") ?? "";
+                console.log("Code from searchParams:", code);
+    
                 const urlState = searchParams.get("state") ?? "";
+                console.log("URL State from searchParams:", urlState);
+    
                 const codeVerifier = activeSessionInfo?.codeVerifier;
+                console.log("Code Verifier from activeSessionInfo:", codeVerifier);
+    
                 const issuerId = activeSessionInfo?.selectedIssuer?.credential_issuer ?? "";
+                console.log("Issuer Id from activeSessionInfo:", issuerId);
+    
                 const certificateId = activeSessionInfo?.certificateId;
+                console.log("Certificate Id from activeSessionInfo:", certificateId);
+    
                 const vcStorageExpiryLimitInTimes = activeSessionInfo?.vcStorageExpiryLimitInTimes ?? "-1";
-
-                const requestBody = new URLSearchParams(getTokenRequestBody(code, codeVerifier, issuerId, certificateId, vcStorageExpiryLimitInTimes));
+                console.log("VC Storage Expiry Limit In Times from activeSessionInfo:", vcStorageExpiryLimitInTimes);
+    
+                const tokenRequestBody = getTokenRequestBody(
+                    code,
+                    codeVerifier,
+                    issuerId,
+                    certificateId,
+                    vcStorageExpiryLimitInTimes
+                );
+                console.log("Token Request Body Object:", tokenRequestBody);
+    
+                const requestBody = new URLSearchParams(tokenRequestBody);
+                console.log("Serialized Request Body:", requestBody.toString());
+    
                 const apiRequest = api.fetchTokenAnddownloadVc;
-                let credentialDownloadResponse = await fetchRequest(
+                console.log("API Request URL:", apiRequest.url());
+                console.log("API Request Method Type:", apiRequest.methodType);
+                console.log("API Request Headers:", apiRequest.headers());
+    
+                const credentialDownloadResponse = await fetchRequest(
                     apiRequest.url(),
                     apiRequest.methodType,
                     apiRequest.headers(),
                     requestBody
                 );
+                console.log("Credential Download Response:", credentialDownloadResponse);
+    
                 if (state !== RequestStatus.ERROR) {
+                    console.log("State is not an error. Proceeding with downloadCredentialPDF");
                     await downloadCredentialPDF(credentialDownloadResponse, certificateId);
                     setCompletedDownload(true);
                 } else {
+                    console.log("An error occurred. Setting error object");
                     setErrorObj(getErrorObject(credentialDownloadResponse));
                 }
+    
                 if (urlState != null) {
+                    console.log("Removing active session with state:", urlState);
                     removeActiveSession(urlState);
                 }
             } else {
+                console.log("No active session info found. Setting session to null");
                 setSession(null);
             }
-        }
+        };
+    
         fetchToken();
-
-    }, [])
+    }, []);
+    
 
     const loadStatusOfRedirection = () => {
         if (!session) {

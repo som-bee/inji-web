@@ -56,17 +56,51 @@ export class api {
             }
         }
     }
-    static authorization = (currentIssuer: IssuerObject, credentialWellknown: IssuerWellknownObject, filterCredentialWellknown: CredentialConfigurationObject, state: string, code_challenge: CodeChallengeObject) => {
-        return `${credentialWellknown.authorization_servers[0]}/authorize` +
+    // static authorization = (currentIssuer: IssuerObject, credentialWellknown: IssuerWellknownObject, filterCredentialWellknown: CredentialConfigurationObject, state: string, code_challenge: CodeChallengeObject) => {
+    //     return `${credentialWellknown.authorization_servers[0]}/auth` +
+    //         `?response_type=code&` +
+    //         `client_id=${currentIssuer.client_id}&` +
+    //         `scope=${filterCredentialWellknown.scope}&` +
+    //         `redirect_uri=${api.authorizationRedirectionUrl}&` +
+    //         `state=${state}&` +
+    //         `code_challenge=${code_challenge.codeChallenge}&` +
+    //         `code_challenge_method=S256&`+
+    //         `ui_locales=${i18n.language}`;
+    // }
+
+    static authorization = (
+        currentIssuer:IssuerObject,
+        credentialWellknown:IssuerWellknownObject,
+        filterCredentialWellknown:CredentialConfigurationObject,
+        state:string,
+        nonce:string,
+        code_challenge:CodeChallengeObject
+    ) => {
+        return `${credentialWellknown.authorization_servers[0]}/auth` + // Ensure this equals "https://stg-id.singpass.gov.sg/auth"
             `?response_type=code&` +
             `client_id=${currentIssuer.client_id}&` +
-            `scope=${filterCredentialWellknown.scope}&` +
+            `scope=openid uinfin name race dob&` + // e.g., "openid uinfin name race dob" ${filterCredentialWellknown.scope}
             `redirect_uri=${api.authorizationRedirectionUrl}&` +
             `state=${state}&` +
             `code_challenge=${code_challenge.codeChallenge}&` +
-            `code_challenge_method=S256&`+
-            `ui_locales=${i18n.language}`;
-    }
+            `code_challenge_method=S256&` +
+            `nonce=${nonce}`;
+    };
+
+    // static authorization = (currentIssuer: IssuerObject,  state: string, code_challenge: CodeChallengeObject) => {
+    //    console.log(currentIssuer,state, code_challenge);
+    //    return "null";
+    // }
+
+    // static authorization: ApiRequest = {
+    //     url: (clientId: string) => `${api.mimotoHost}/authorize`,
+    //     methodType: MethodType.POST,
+    //     headers: () => ({
+    //         "Content-Type": "application/json",
+    //         "Accept": "application/json"
+    //     })
+    // };
+    
 }
 
 

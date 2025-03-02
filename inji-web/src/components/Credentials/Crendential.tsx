@@ -18,9 +18,23 @@ export const Credential: React.FC<CredentialProps> = (props) => {
     const credentialObject = getObjectForCurrentLanguage(filteredCredentialConfig.display, language);
     const vcStorageExpiryLimitInTimes = useSelector((state: RootState) => state.common.vcStorageExpiryLimitInTimes);
 
-    const onSuccess = (defaultVCStorageExpiryLimit: number = vcStorageExpiryLimitInTimes) => {
+    // const onSuccess = async (defaultVCStorageExpiryLimit: number = vcStorageExpiryLimitInTimes) => {
+    //     const state = generateRandomString();
+    //     const code_challenge: CodeChallengeObject = generateCodeChallenge(state);
+    //     addNewSession({
+    //         selectedIssuer: selectedIssuer.selected_issuer,
+    //         certificateId: props.credentialId,
+    //         codeVerifier: state,
+    //         vcStorageExpiryLimitInTimes: isNaN(defaultVCStorageExpiryLimit) ? vcStorageExpiryLimitInTimes : defaultVCStorageExpiryLimit,
+    //         state: state,
+    //     });
+    //     window.open(api.authorization(selectedIssuer.selected_issuer, props.credentialWellknown, filteredCredentialConfig, state, code_challenge), '_self', 'noopener');
+    // }
+
+    const onSuccess = async (defaultVCStorageExpiryLimit = vcStorageExpiryLimitInTimes) => {
         const state = generateRandomString();
-        const code_challenge: CodeChallengeObject = generateCodeChallenge(state);
+        const nonce = generateRandomString(); // New nonce for Singpass
+        const code_challenge = generateCodeChallenge(state);
         addNewSession({
             selectedIssuer: selectedIssuer.selected_issuer,
             certificateId: props.credentialId,
@@ -28,9 +42,27 @@ export const Credential: React.FC<CredentialProps> = (props) => {
             vcStorageExpiryLimitInTimes: isNaN(defaultVCStorageExpiryLimit) ? vcStorageExpiryLimitInTimes : defaultVCStorageExpiryLimit,
             state: state,
         });
-        window.open(api.authorization(selectedIssuer.selected_issuer, props.credentialWellknown, filteredCredentialConfig, state, code_challenge), '_self', 'noopener');
-    }
-
+        console.log( selectedIssuer.selected_issuer,
+            props.credentialWellknown,
+            filteredCredentialConfig,
+            state,
+            nonce,
+            code_challenge);
+        window.open(
+            api.authorization(
+                selectedIssuer.selected_issuer,
+                props.credentialWellknown,
+                filteredCredentialConfig,
+                state,
+                nonce,
+                code_challenge
+            ),
+            '_self',
+            'noopener'
+        );
+    };
+    
+    
     return <React.Fragment>
         <ItemBox index={props.index}
                  url={credentialObject.logo.url}
